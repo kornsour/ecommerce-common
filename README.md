@@ -16,3 +16,7 @@ Shared library for services of the ecommerce example application [here](github.c
   - For production use, follow [semantic versioning](https://docs.npmjs.com/about-semantic-versioning)
 - `npm run build`
 - `npm publish`
+
+## Update package for service
+
+Back in the ecommerce-app, run `npm update @kornorg/common` for the desired service
