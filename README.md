@@ -1,6 +1,6 @@
 # ecommerce-common
 
-Shared library for services of the ecommerce example application [here](github.com/kornsour/ecommerce-example)
+Shared library for services of the [ecommerce example application](github.com/kornsour/ecommerce-example)
 
 ## Dependencies
 
