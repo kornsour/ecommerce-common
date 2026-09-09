@@ -1,0 +1,53 @@
+name: CI
+
+# Repo-local CI rather than the shared kornsour/gh-automation ci.yml: that one
+# assumes pnpm with Biome and Vitest, and this package is plain npm + tsc with
+# no test suite.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24"
+
+# Self-hosted runners are opt-in via the USE_SELF_HOSTED_RUNNER repo var, and
+# additionally gated to private repos: on a public repo a fork PR could run
+# arbitrary code on the runner, so public callers always get GitHub-hosted
+# regardless of the var.
+jobs:
+  typecheck:
+    name: Type check
+    runs-on: ${{ fromJSON(vars.USE_SELF_HOSTED_RUNNER == 'true' && github.event.repository.private && '["self-hosted","Linux","X64"]' || '["ubuntu-latest"]') }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      # `npm ci` also fails outright when package.json and package-lock.json
+      # disagree, which covers the lockfile-integrity intent for this npm repo.
+      - run: npm ci
+      - run: npx tsc --noEmit
+
+  build:
+    name: Build
+    runs-on: ${{ fromJSON(vars.USE_SELF_HOSTED_RUNNER == 'true' && github.event.repository.private && '["self-hosted","Linux","X64"]' || '["ubuntu-latest"]') }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      # Compiles what actually ships: `files` publishes only build/**.
+      - run: npm run build

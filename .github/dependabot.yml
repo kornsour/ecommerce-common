@@ -1,0 +1,38 @@
+version: 2
+updates:
+  # npm dependencies (package.json). Minor/patch are batched into a single
+  # grouped PR — one CI run per week instead of one per package — and the
+  # auto-merge workflow merges them once checks pass. Majors come as individual
+  # PRs for manual review.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "kornsour"
+    labels:
+      - "dependencies"
+    groups:
+      npm-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions pinned in workflows. Grouped so all action bumps arrive as one
+  # PR, keeping CI runs (and minutes) to a minimum.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "ci"
+    groups:
+      actions:
+        patterns:
+          - "*"
