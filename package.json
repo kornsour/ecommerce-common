@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "del-cli": "^7.0.0",
+    "del-cli": "^8.0.1",
     "typescript": "^4.7.3"
   },
   "dependencies": {
