@@ -15,7 +15,9 @@ export class RequestValidationError extends CustomError {
 
     serializeErrors() {
         return this.errors.map(err => {
-            return { message: err.msg, field: err.param };
+            // express-validator 7 renamed `param` to `path`, and only
+            // field-type errors carry one (alternative/group errors do not).
+            return { message: err.msg, field: err.type === 'field' ? err.path : undefined };
         });
     }
 }
